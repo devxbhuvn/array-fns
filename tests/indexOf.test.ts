@@ -15,4 +15,8 @@ describe('indexOf', () => {
     it('uses strict equality', () => {
         expect(indexOf([Number.NaN], Number.NaN)).toBe(-1);
     });
+
+    it('treats a NaN start index as zero', () => {
+        expect(indexOf(['first'], 'first', Number.NaN)).toBe(0);
+    });
 });

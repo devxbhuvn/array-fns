@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.2
+
+### Fixed
+
+- Align `includes`, `indexOf`, and `lastIndexOf` with JavaScript search semantics for `NaN` start indexes.
+
 ## 1.0.1
 
 ### Fixed

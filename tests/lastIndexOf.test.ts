@@ -12,4 +12,8 @@ describe('lastIndexOf', () => {
         expect(lastIndexOf(input, 'a', -2)).toBe(2);
         expect(lastIndexOf(input, 'z')).toBe(-1);
     });
+
+    it('treats a NaN start index as the last index', () => {
+        expect(lastIndexOf(['a', 'b', 'a'], 'a', Number.NaN)).toBe(2);
+    });
 });

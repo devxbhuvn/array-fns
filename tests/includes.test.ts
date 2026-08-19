@@ -17,4 +17,8 @@ describe('includes', () => {
     it('returns false for an empty array', () => {
         expect(includes([], 'value')).toBe(false);
     });
+
+    it('treats a NaN start index as zero', () => {
+        expect(includes(['first'], 'first', Number.NaN)).toBe(true);
+    });
 });
