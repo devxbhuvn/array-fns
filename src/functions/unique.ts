@@ -11,20 +11,15 @@ export function unique<T>(array: readonly T[]): T[];
 export function unique<T, K extends PropertyKey>(array: readonly T[], selector: (value: T, index: number, array: readonly T[]) => K): T[];
 export function unique<T, K extends PropertyKey>(array: readonly T[], selector?: (value: T, index: number, array: readonly T[]) => K): T[] {
     const result: T[] = [];
+    const keys: K[] = [];
 
     for (let index = 0; index < array.length; index += 1) {
         const item = array[index]!;
         const key = selector ? selector(item, index, array) : (item as unknown as K);
 
-        if (
-            !result.some((existing, existingIndex) => {
-                if (selector) {
-                    return sameValueZero(selector(existing, existingIndex, result), key);
-                }
-                return sameValueZero(existing, item);
-            })
-        ) {
+        if (!keys.some((existingKey) => sameValueZero(existingKey, key))) {
             result.push(item);
+            keys.push(key);
         }
     }
 

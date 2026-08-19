@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.1
+
+### Fixed
+
+- Normalize fractional and `NaN` starting indexes in `findIndex`.
+- Ensure `unique` selector callbacks are called once per input item with the original index and array.
+
 ## 1.0.0
 
 ### Added

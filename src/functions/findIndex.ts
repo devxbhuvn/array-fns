@@ -9,7 +9,8 @@ import type { Predicate } from '../types/common';
  * @returns The index of the first match or `-1` when no match is found.
  */
 export function findIndex<T>(array: readonly T[], predicate: Predicate<T>, fromIndex = 0): number {
-    const start = fromIndex < 0 ? array.length + fromIndex : fromIndex;
+    const normalizedIndex = Number.isNaN(fromIndex) ? 0 : Math.trunc(fromIndex);
+    const start = normalizedIndex < 0 ? array.length + normalizedIndex : normalizedIndex;
 
     if (start < 0 || start >= array.length) {
         return -1;

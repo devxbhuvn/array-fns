@@ -13,4 +13,9 @@ describe('findIndex', () => {
     it('supports a negative start index', () => {
         expect(findIndex([1, 2, 3, 4], (value) => value === 3, -2)).toBe(2);
     });
+
+    it('normalizes fractional and NaN start indexes', () => {
+        expect(findIndex([10, 20], (value) => value === 20, 0.5)).toBe(1);
+        expect(findIndex([10, 20], (value) => value === 10, Number.NaN)).toBe(0);
+    });
 });
