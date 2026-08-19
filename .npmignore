@@ -1,0 +1,10 @@
+src/
+tests/
+examples/
+.github/
+.vscode/
+coverage/
+*.log
+.eslintrc.cjs
+.prettierrc.json
+vitest.config.ts

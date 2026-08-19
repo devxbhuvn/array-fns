@@ -1,0 +1,72 @@
+{
+    "name": "@devxbhuvn/array-fns",
+    "version": "1.0.0",
+    "description": "Modern, dependency-free TypeScript array utilities for everyday JavaScript and TypeScript development.",
+    "license": "MIT",
+    "author": "Bhuvanesh C <cjbhuvanesh8@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/devxbhuvn/array-fns.git"
+    },
+    "bugs": {
+        "url": "https://github.com/devxbhuvn/array-fns/issues"
+    },
+    "homepage": "https://github.com/devxbhuvn/array-fns#readme",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "keywords": [
+        "array",
+        "collections",
+        "utilities",
+        "typescript",
+        "javascript",
+        "immutable",
+        "functions",
+        "array-fns"
+    ],
+    "scripts": {
+        "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+        "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint . --ext .ts",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "clean": "rimraf dist",
+        "pack:check": "npm pack --dry-run"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "sideEffects": false,
+    "publishConfig": {
+        "access": "public"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "@typescript-eslint/eslint-plugin": "^8.17.0",
+        "@typescript-eslint/parser": "^8.17.0",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^8.4.0",
+        "prettier": "^3.3.3",
+        "rimraf": "^6.0.0",
+        "tsup": "^8.5.1",
+        "typescript": "^5.7.2",
+        "vitest": "^2.1.9"
+    }
+}
