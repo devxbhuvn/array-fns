@@ -1,4 +1,4 @@
-import { countBy, groupBy, sortBy, unique } from '../src';
+import { countBy, groupBy, keyBy, maxBy, orderBy, unique } from '../src';
 
 interface User {
     id: number;
@@ -15,6 +15,8 @@ const users: User[] = [
 ];
 
 console.log(groupBy(users, (user: User) => user.role));
+console.log(keyBy(users, (user: User) => user.id));
 console.log(unique(users, (user: User) => user.id));
-console.log(sortBy(users, (user: User) => user.age));
+console.log(orderBy(users, [(user: User) => user.age], ['desc']));
+console.log(maxBy(users, (user: User) => user.age));
 console.log(countBy(users, (user: User) => user.role));

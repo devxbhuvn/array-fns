@@ -1,5 +1,3 @@
-import { sameValueZero } from '../utils/equality';
-
 /**
  * Returns values that are present in both arrays.
  *
@@ -10,13 +8,14 @@ import { sameValueZero } from '../utils/equality';
  * @returns A new array of shared values.
  */
 export function intersection<T>(first: readonly T[], second: readonly T[]): T[] {
+    const secondSet = new Set(second);
     const result: T[] = [];
+    const seen = new Set<T>();
 
     for (const item of first) {
-        if (second.some((candidate) => sameValueZero(item, candidate))) {
-            if (!result.some((existing) => sameValueZero(existing, item))) {
-                result.push(item);
-            }
+        if (secondSet.has(item) && !seen.has(item)) {
+            seen.add(item);
+            result.push(item);
         }
     }
 

@@ -1,4 +1,5 @@
 import type { Predicate } from '../types/common';
+import { normalizeFromIndex } from '../utils/indexes';
 
 /**
  * Returns the index of the first element that matches the predicate.
@@ -9,10 +10,9 @@ import type { Predicate } from '../types/common';
  * @returns The index of the first match or `-1` when no match is found.
  */
 export function findIndex<T>(array: readonly T[], predicate: Predicate<T>, fromIndex = 0): number {
-    const normalizedIndex = Number.isNaN(fromIndex) ? 0 : Math.trunc(fromIndex);
-    const start = normalizedIndex < 0 ? array.length + normalizedIndex : normalizedIndex;
+    const start = normalizeFromIndex(fromIndex, array.length);
 
-    if (start < 0 || start >= array.length) {
+    if (start >= array.length) {
         return -1;
     }
 

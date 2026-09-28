@@ -1,4 +1,4 @@
-import { chunk, compact, unique, range } from '@devxbhuvn/array-fns';
+import { chunk, compact, unique, range } from '../src';
 
 const numbers = [1, 2, 2, 3, 0, false, 4];
 

@@ -1,5 +1,3 @@
-import { sameValueZero } from '../utils/equality';
-
 /**
  * Removes duplicates from an array using SameValueZero semantics.
  *
@@ -10,16 +8,30 @@ import { sameValueZero } from '../utils/equality';
 export function unique<T>(array: readonly T[]): T[];
 export function unique<T, K extends PropertyKey>(array: readonly T[], selector: (value: T, index: number, array: readonly T[]) => K): T[];
 export function unique<T, K extends PropertyKey>(array: readonly T[], selector?: (value: T, index: number, array: readonly T[]) => K): T[] {
+    if (!selector) {
+        const result: T[] = [];
+        const seen = new Set<T>();
+
+        for (const item of array) {
+            if (!seen.has(item)) {
+                seen.add(item);
+                result.push(item);
+            }
+        }
+
+        return result;
+    }
+
     const result: T[] = [];
-    const keys: K[] = [];
+    const seen = new Set<K>();
 
     for (let index = 0; index < array.length; index += 1) {
         const item = array[index]!;
-        const key = selector ? selector(item, index, array) : (item as unknown as K);
+        const key = selector(item, index, array);
 
-        if (!keys.some((existingKey) => sameValueZero(existingKey, key))) {
+        if (!seen.has(key)) {
+            seen.add(key);
             result.push(item);
-            keys.push(key);
         }
     }
 

@@ -28,26 +28,30 @@ npm install @devxbhuvn/array-fns
 ## Getting started
 
 ```ts
-import { groupBy, sortBy, unique } from '@devxbhuvn/array-fns';
+import { groupBy, keyBy, orderBy, sumBy, unique } from '@devxbhuvn/array-fns';
 
 type User = {
     id: number;
     name: string;
     team: string;
+    score: number;
 };
 
 const users: User[] = [
-    { id: 1, name: 'Maya', team: 'platform' },
-    { id: 2, name: 'Noah', team: 'design' },
-    { id: 3, name: 'Ava', team: 'platform' }
+    { id: 1, name: 'Maya', team: 'platform', score: 12 },
+    { id: 2, name: 'Noah', team: 'design', score: 8 },
+    { id: 3, name: 'Ava', team: 'platform', score: 15 }
 ];
 
 const usersByTeam = groupBy(users, (user) => user.team);
-const usersByName = sortBy(users, (user) => user.name);
+const usersById = keyBy(users, (user) => user.id);
+const ranked = orderBy(users, [(user) => user.score], ['desc']);
 const ids = unique([1, 1, 2, 3, 3]);
 
 console.log(usersByTeam.platform); // Two users
-console.log(usersByName[0]?.name); // Ava
+console.log(usersById[2]?.name); // Noah
+console.log(ranked[0]?.name); // Ava
+console.log(sumBy(users, (user) => user.score)); // 35
 console.log(ids); // [1, 2, 3]
 ```
 
@@ -158,7 +162,7 @@ const account = find(accounts, (item) => item.email === 'maya@example.com');
 
 ### `findIndex`
 
-Returns the index of the first matching value, or `-1` when no value matches. An optional `fromIndex` controls where the search begins; negative values count from the end.
+Returns the index of the first matching value, or `-1` when no value matches. An optional `fromIndex` controls where the search begins; negative values count from the end and are clamped to the start of the array.
 
 ```ts
 import { findIndex } from '@devxbhuvn/array-fns';
@@ -609,6 +613,294 @@ Rules:
 - A zero or non-finite step throws a `RangeError`.
 - Invalid bounds throw a `TypeError`.
 
+## Aggregates and lookup
+
+### `keyBy` / `indexBy`
+
+Builds an object keyed by a selector. `indexBy` is an alias of `keyBy`.
+
+```ts
+import { keyBy } from '@devxbhuvn/array-fns';
+
+keyBy([{ id: 'a' }, { id: 'b' }], (item) => item.id);
+// { a: { id: 'a' }, b: { id: 'b' } }
+```
+
+### `at` / `nth`
+
+Returns the element at an index, including negative indexes. `nth` is an alias of `at`.
+
+```ts
+import { at } from '@devxbhuvn/array-fns';
+
+at([10, 20, 30], -1); // 30
+```
+
+### `pluck`
+
+Maps each object to the value at a property key.
+
+```ts
+import { pluck } from '@devxbhuvn/array-fns';
+
+pluck([{ name: 'Maya' }, { name: 'Noah' }], 'name'); // ['Maya', 'Noah']
+```
+
+### `max` / `min` / `maxBy` / `minBy`
+
+Numeric extremes, or extremes by iteratee. Empty / non-finite inputs return `undefined`.
+
+```ts
+import { max, maxBy } from '@devxbhuvn/array-fns';
+
+max([1, 5, 3]); // 5
+maxBy([{ score: 2 }, { score: 9 }], (item) => item.score); // { score: 9 }
+```
+
+### `sum` / `sumBy` / `mean` / `meanBy` / `product`
+
+Numeric aggregates. `sum` and `product` return `0` and `1` for empty arrays. `mean` returns `undefined` when there are no finite values.
+
+```ts
+import { sum, sumBy, mean, product } from '@devxbhuvn/array-fns';
+
+sum([1, 2, 3]); // 6
+sumBy([{ n: 2 }, { n: 3 }], (item) => item.n); // 5
+mean([2, 4, 6]); // 4
+product([2, 3, 4]); // 24
+```
+
+### `mode` / `median` / `percentile`
+
+Statistical helpers over finite numbers (`mode` works on any values).
+
+```ts
+import { mode, median, percentile } from '@devxbhuvn/array-fns';
+
+mode([1, 2, 2, 3]); // 2
+median([1, 2, 3, 4]); // 2.5
+percentile([0, 10, 20, 30], 50); // 15
+```
+
+## Filtering helpers
+
+### `reject` / `none` / `without` / `compactBy`
+
+```ts
+import { reject, none, without, compactBy } from '@devxbhuvn/array-fns';
+
+reject([1, 2, 3, 4], (value) => value % 2 === 0); // [1, 3]
+none([1, 3, 5], (value) => value % 2 === 0); // true
+without([1, 2, 3, 1], 1, 3); // [2]
+compactBy([1, null, 2], (value) => value == null); // [1, 2]
+```
+
+### `includesAll` / `includesAny` / `isEmpty`
+
+```ts
+import { includesAll, includesAny, isEmpty } from '@devxbhuvn/array-fns';
+
+includesAll([1, 2, 3], [1, 3]); // true
+includesAny([1, 2], [4, 2]); // true
+isEmpty([]); // true
+```
+
+## Extended set operations
+
+### `xor` / `xorBy`
+
+Symmetric difference using SameValueZero, or by selector key.
+
+```ts
+import { xor, xorBy } from '@devxbhuvn/array-fns';
+
+xor([1, 2, 3], [2, 4]); // [1, 3, 4]
+xorBy([{ id: 1 }, { id: 2 }], [{ id: 2 }, { id: 3 }], (item) => item.id);
+// [{ id: 1 }, { id: 3 }]
+```
+
+### `differenceBy` / `intersectionBy` / `unionBy` / `uniqueBy`
+
+Selector-aware set helpers. `uniqueBy` is an alias of `unique`.
+
+```ts
+import { differenceBy, intersectionBy, unionBy } from '@devxbhuvn/array-fns';
+
+differenceBy([{ id: 1 }, { id: 2 }], [{ id: 2 }], (item) => item.id); // [{ id: 1 }]
+intersectionBy([{ id: 1 }, { id: 2 }], [{ id: 2 }], (item) => item.id); // [{ id: 2 }]
+unionBy((item) => item.id, [{ id: 1 }], [{ id: 1 }, { id: 2 }]); // [{ id: 1 }, { id: 2 }]
+```
+
+### `differenceWith` / `intersectionWith` / `unionWith` / `uniqueWith`
+
+Custom equality comparators (`(a, b) => boolean`, `true` means equal).
+
+```ts
+import { uniqueWith } from '@devxbhuvn/array-fns';
+
+uniqueWith([{ id: 1 }, { id: 1 }], (a, b) => a.id === b.id); // [{ id: 1 }]
+```
+
+### `isSubset` / `isSuperset`
+
+```ts
+import { isSubset, isSuperset } from '@devxbhuvn/array-fns';
+
+isSubset([1, 2], [1, 2, 3]); // true
+isSuperset([1, 2, 3], [1, 2]); // true
+```
+
+## Sorting extras
+
+### `orderBy`
+
+Stable multi-criteria sort with optional `'asc' | 'desc'` directions per selector.
+
+```ts
+import { orderBy } from '@devxbhuvn/array-fns';
+
+orderBy(
+    [
+        { name: 'a', age: 2 },
+        { name: 'a', age: 1 }
+    ],
+    [(item) => item.name, (item) => item.age],
+    ['asc', 'desc']
+);
+```
+
+### `sortedIndex` / `sortedUnique` / `isSorted`
+
+```ts
+import { sortedIndex, sortedUnique, isSorted } from '@devxbhuvn/array-fns';
+
+sortedIndex([1, 3, 5], 4); // 2
+sortedUnique([1, 1, 2, 2, 3]); // [1, 2, 3]
+isSorted([1, 2, 3]); // true
+```
+
+## Slice and edit helpers
+
+### `findLast` / `findLastIndex`
+
+```ts
+import { findLast, findLastIndex } from '@devxbhuvn/array-fns';
+
+findLast([1, 2, 3, 4], (value) => value % 2 === 0); // 4
+findLastIndex([1, 2, 3, 2], (value) => value === 2); // 3
+```
+
+### `takeUntil` / `dropUntil` / `initial` / `tail` / `rest`
+
+`rest` is an alias of `tail`.
+
+```ts
+import { takeUntil, dropUntil, initial, tail } from '@devxbhuvn/array-fns';
+
+takeUntil([1, 2, 3, 4], (value) => value === 3); // [1, 2]
+dropUntil([1, 2, 3, 4], (value) => value === 3); // [3, 4]
+initial([1, 2, 3]); // [1, 2]
+tail([1, 2, 3]); // [2, 3]
+```
+
+### `splitAt` / `splitWhen` / `span`
+
+```ts
+import { splitAt, splitWhen, span } from '@devxbhuvn/array-fns';
+
+splitAt([1, 2, 3, 4], 2); // [[1, 2], [3, 4]]
+splitWhen([1, 2, 3, 4], (value) => value > 2); // [[1, 2], [3, 4]]
+span([1, 2, 3, 4], (value) => value < 3); // [[1, 2], [3, 4]]
+```
+
+### `insertAt` / `removeAt` / `updateAt` / `setAt` / `move` / `swap` / `fill`
+
+Immutable index edits.
+
+```ts
+import { insertAt, removeAt, updateAt, setAt, move, swap, fill } from '@devxbhuvn/array-fns';
+
+insertAt([1, 4], 1, 2, 3); // [1, 2, 3, 4]
+removeAt([1, 2, 3], 1); // [1, 3]
+updateAt([1, 2, 3], 1, (value) => value * 10); // [1, 20, 3]
+setAt([1, 2, 3], 1, 9); // [1, 9, 3]
+move([1, 2, 3, 4], 1, 3); // [1, 3, 4, 2]
+swap([1, 2, 3], 0, 2); // [3, 2, 1]
+fill([1, 2, 3, 4], 0, 1, 3); // [1, 0, 0, 4]
+```
+
+## Windows and structure
+
+### `sliding` / `chunkBy` / `intersperse` / `interleave` / `transpose` / `flattenDeep`
+
+```ts
+import { sliding, chunkBy, intersperse, interleave, transpose, flattenDeep } from '@devxbhuvn/array-fns';
+
+sliding([1, 2, 3, 4], 2); // [[1, 2], [2, 3], [3, 4]]
+chunkBy([1, 1, 2, 2, 1], (value) => value); // [[1, 1], [2, 2], [1]]
+intersperse([1, 2, 3], 0); // [1, 0, 2, 0, 3]
+interleave([1, 2], ['a', 'b', 'c']); // [1, 'a', 2, 'b', 'c']
+transpose([
+    [1, 2],
+    [3, 4]
+]); // [[1, 3], [2, 4]]
+flattenDeep([1, [2, [3]]]); // [1, 2, 3]
+```
+
+### `zipLongest` / `zipObject` / `zipMany` / `unzipWith` / `cartesian`
+
+```ts
+import { zipLongest, zipObject, zipMany, unzipWith, cartesian } from '@devxbhuvn/array-fns';
+
+zipLongest([1, 2], ['a']); // [[1, 'a'], [2, undefined]]
+zipObject(['a', 'b'], [1, 2]); // { a: 1, b: 2 }
+zipMany([1, 2], ['a', 'b'], [true, false]); // [[1, 'a', true], [2, 'b', false]]
+unzipWith(
+    [
+        [1, 2],
+        [10, 20]
+    ],
+    (a, b) => a + b
+); // [11, 22]
+cartesian([1, 2], ['a', 'b']); // [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
+```
+
+## Search, equality, and creation
+
+### `startsWith` / `endsWith` / `equals` / `binarySearch`
+
+```ts
+import { startsWith, endsWith, equals, binarySearch } from '@devxbhuvn/array-fns';
+
+startsWith([1, 2, 3], [1, 2]); // true
+endsWith([1, 2, 3], [2, 3]); // true
+equals([1, Number.NaN], [1, Number.NaN]); // true
+binarySearch([1, 3, 5, 7], 5); // 2
+```
+
+### `sampleWeighted` / `choice`
+
+`choice` is an alias of `sample`.
+
+```ts
+import { sampleWeighted, choice } from '@devxbhuvn/array-fns';
+
+sampleWeighted(['a', 'b'], [1, 3]); // 'a' or 'b'
+choice([7]); // 7
+```
+
+### `repeat` / `times` / `castArray` / `scan` / `tap`
+
+```ts
+import { repeat, times, castArray, scan, tap } from '@devxbhuvn/array-fns';
+
+repeat('x', 3); // ['x', 'x', 'x']
+times(3, (index) => index * 2); // [0, 2, 4]
+castArray(1); // [1]
+scan([1, 2, 3], (sum, value) => sum + value, 0); // [1, 3, 6]
+tap([1, 2], (copy) => console.log(copy)); // [1, 2]
+```
+
 ## Sorting and random utilities
 
 ### `sortBy`
@@ -701,15 +993,18 @@ sampleSize(['A', 'B'], 10);
 
 ## Validation and edge cases
 
-- `chunk` requires a positive integer size.
+- `chunk`, `sliding`, and related size/step arguments require positive integers.
 - `flatten` requires a non-negative integer depth or `Infinity`.
 - `range` rejects invalid bounds and invalid steps.
-- `sampleSize` requires a non-negative integer size.
+- `sampleSize`, `repeat`, and `times` require non-negative integer counts/sizes.
+- `percentile` requires a finite value in `[0, 100]`.
+- `sampleWeighted` requires matching lengths, non-negative finite weights, and a positive total weight.
 - `take` and `drop` require non-negative integer counts.
 - `takeRight` and `dropRight` truncate fractional counts toward zero; negative counts behave as zero.
 - `reduce` and `reduceRight` throw when called on an empty array without an initial value.
-- `first`, `last`, `find`, and `sample` return `undefined` when no value is available.
-- `zip` and `zipWith` stop at the shortest input array.
+- `first`, `last`, `find`, `findLast`, `sample`, `choice`, `max`, `min`, `mean`, `median`, `mode`, and related helpers return `undefined` when no value is available.
+- `zip`, `zipWith`, and `zipMany` stop at the shortest input array; `zipLongest` pads with `undefined`.
+- `binarySearch` assumes an ascending sorted array and returns `-1` when the value is absent.
 - Equality-based operations preserve references to object values and do not perform deep equality checks.
 
 ## TypeScript types
@@ -717,12 +1012,15 @@ sampleSize(['A', 'B'], 10);
 The package publishes declaration files and exports these shared types:
 
 ```ts
-import type { Comparator, Predicate, Selector, SortValue } from '@devxbhuvn/array-fns';
+import type { Comparator, EqualityComparator, Iteratee, OrderDirection, Predicate, Selector, SortValue } from '@devxbhuvn/array-fns';
 ```
 
 - `Predicate<T>` receives `(value, index, array)` and returns a boolean.
 - `Selector<T, K>` receives `(value, index, array)` and returns a property key.
 - `Comparator<T>` receives two values and returns a number less than, equal to, or greater than zero.
+- `EqualityComparator<T>` receives two values and returns `true` when they should be treated as equal.
+- `Iteratee<T, R>` maps a value to another result.
+- `OrderDirection` is `'asc' | 'desc'`.
 - `SortValue` describes values supported by selector-based sorting.
 
 ## Package output

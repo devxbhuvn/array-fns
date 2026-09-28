@@ -1,6 +1,6 @@
 {
     "name": "@devxbhuvn/array-fns",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "Modern, dependency-free TypeScript array utilities for everyday JavaScript and TypeScript development.",
     "license": "MIT",
     "author": "Bhuvanesh C <cjbhuvanesh8@gmail.com>",
@@ -44,11 +44,12 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "typecheck": "tsc --noEmit",
-        "lint": "eslint . --ext .ts",
+        "lint": "eslint .",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "clean": "rimraf dist",
-        "pack:check": "npm pack --dry-run"
+        "pack:check": "npm pack --dry-run",
+        "prepublishOnly": "npm run build"
     },
     "engines": {
         "node": ">=18"
@@ -58,15 +59,16 @@
         "access": "public"
     },
     "devDependencies": {
-        "@types/node": "^22.10.2",
-        "@typescript-eslint/eslint-plugin": "^8.17.0",
-        "@typescript-eslint/parser": "^8.17.0",
-        "eslint": "^8.57.1",
-        "eslint-config-prettier": "^8.4.0",
-        "prettier": "^3.3.3",
-        "rimraf": "^6.0.0",
+        "@types/node": "^22.13.10",
+        "@typescript-eslint/eslint-plugin": "^8.26.1",
+        "@typescript-eslint/parser": "^8.26.1",
+        "eslint": "^9.22.0",
+        "eslint-config-prettier": "^10.1.1",
+        "prettier": "^3.5.3",
+        "rimraf": "^6.0.1",
         "tsup": "^8.5.1",
-        "typescript": "^5.7.2",
-        "vitest": "^2.1.9"
+        "typescript": "^5.8.2",
+        "typescript-eslint": "^8.26.1",
+        "vitest": "^3.0.8"
     }
 }

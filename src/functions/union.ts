@@ -1,5 +1,3 @@
-import { sameValueZero } from '../utils/equality';
-
 /**
  * Returns unique values from multiple arrays in order of appearance.
  *
@@ -8,10 +6,12 @@ import { sameValueZero } from '../utils/equality';
  */
 export function union<T>(...arrays: ReadonlyArray<readonly T[]>): T[] {
     const result: T[] = [];
+    const seen = new Set<T>();
 
     for (const array of arrays) {
         for (const item of array) {
-            if (!result.some((existing) => sameValueZero(existing, item))) {
+            if (!seen.has(item)) {
+                seen.add(item);
                 result.push(item);
             }
         }

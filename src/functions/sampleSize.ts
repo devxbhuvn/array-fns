@@ -15,14 +15,13 @@ export function sampleSize<T>(array: readonly T[], size: number): T[] {
         return [];
     }
 
-    const result = [...array];
-    const sampleCount = Math.min(size, result.length);
+    const sampleCount = Math.min(size, array.length);
+    const result = array.slice();
 
-    for (let index = result.length - 1; index > 0; index -= 1) {
-        const swapIndex = Math.floor(Math.random() * (index + 1));
+    for (let index = 0; index < sampleCount; index += 1) {
+        const swapIndex = index + Math.floor(Math.random() * (result.length - index));
         const current = result[index]!;
-        const swap = result[swapIndex]!;
-        result[index] = swap;
+        result[index] = result[swapIndex]!;
         result[swapIndex] = current;
     }
 
