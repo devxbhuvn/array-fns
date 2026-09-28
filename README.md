@@ -15,7 +15,7 @@ A TypeScript-first collection of small, immutable, dependency-free array utiliti
 
 ## Requirements
 
-- Node.js 18 or newer
+- Node.js 20 or newer
 - Modern browsers with ES2020 support
 - TypeScript projects are supported through published declaration files
 
@@ -25,10 +25,16 @@ A TypeScript-first collection of small, immutable, dependency-free array utiliti
 npm install @devxbhuvn/array-fns
 ```
 
+Deep imports are supported for individual helpers:
+
+```ts
+import { unique } from '@devxbhuvn/array-fns/unique';
+```
+
 ## Getting started
 
 ```ts
-import { groupBy, keyBy, orderBy, sumBy, unique } from '@devxbhuvn/array-fns';
+import { groupBy, groupToMap, keyBy, orderBy, sumBy, unique } from '@devxbhuvn/array-fns';
 
 type User = {
     id: number;
@@ -615,25 +621,37 @@ Rules:
 
 ## Aggregates and lookup
 
-### `keyBy` / `indexBy`
+### `keyBy` / `indexToMap` / `groupToMap`
 
-Builds an object keyed by a selector. `indexBy` is an alias of `keyBy`.
+`keyBy` builds an object keyed by a selector. `indexToMap` and `groupToMap` are Map-based twins of `keyBy` / `groupBy`.
 
 ```ts
-import { keyBy } from '@devxbhuvn/array-fns';
+import { keyBy, indexToMap, groupToMap } from '@devxbhuvn/array-fns';
 
 keyBy([{ id: 'a' }, { id: 'b' }], (item) => item.id);
 // { a: { id: 'a' }, b: { id: 'b' } }
+
+indexToMap([{ id: 'a' }, { id: 'b' }], (item) => item.id).get('a');
+groupToMap([{ type: 'x' }, { type: 'x' }], (item) => item.type).get('x');
 ```
 
-### `at` / `nth`
+### `at`
 
-Returns the element at an index, including negative indexes. `nth` is an alias of `at`.
+Returns the element at an index, including negative indexes.
 
 ```ts
 import { at } from '@devxbhuvn/array-fns';
 
 at([10, 20, 30], -1); // 30
+```
+
+### `frequencies` / `countWhere`
+
+```ts
+import { frequencies, countWhere } from '@devxbhuvn/array-fns';
+
+frequencies([1, 1, 2]); // Map { 1 => 2, 2 => 1 }
+countWhere([1, 2, 3, 4], (value) => value % 2 === 0); // 2
 ```
 
 ### `pluck`
@@ -670,16 +688,19 @@ mean([2, 4, 6]); // 4
 product([2, 3, 4]); // 24
 ```
 
-### `mode` / `median` / `percentile`
+### `mode` / `median` / `percentile` / `extent` / `variance` / `stdDev`
 
-Statistical helpers over finite numbers (`mode` works on any values).
+Statistical helpers over finite numbers (`mode` works on any values). `variance` / `stdDev` use population formulas.
 
 ```ts
-import { mode, median, percentile } from '@devxbhuvn/array-fns';
+import { mode, median, percentile, extent, variance, stdDev } from '@devxbhuvn/array-fns';
 
 mode([1, 2, 2, 3]); // 2
 median([1, 2, 3, 4]); // 2.5
 percentile([0, 10, 20, 30], 50); // 15
+extent([3, 1, 4]); // [1, 4]
+variance([2, 4, 4, 4, 5, 5, 7, 9]); // 4
+stdDev([2, 4, 4, 4, 5, 5, 7, 9]); // 2
 ```
 
 ## Filtering helpers
@@ -719,9 +740,9 @@ xorBy([{ id: 1 }, { id: 2 }], [{ id: 2 }, { id: 3 }], (item) => item.id);
 // [{ id: 1 }, { id: 3 }]
 ```
 
-### `differenceBy` / `intersectionBy` / `unionBy` / `uniqueBy`
+### `differenceBy` / `intersectionBy` / `unionBy`
 
-Selector-aware set helpers. `uniqueBy` is an alias of `unique`.
+Selector-aware set helpers. Prefer `unique(array, selector)` when you need uniqueness by key.
 
 ```ts
 import { differenceBy, intersectionBy, unionBy } from '@devxbhuvn/array-fns';
@@ -729,6 +750,17 @@ import { differenceBy, intersectionBy, unionBy } from '@devxbhuvn/array-fns';
 differenceBy([{ id: 1 }, { id: 2 }], [{ id: 2 }], (item) => item.id); // [{ id: 1 }]
 intersectionBy([{ id: 1 }, { id: 2 }], [{ id: 2 }], (item) => item.id); // [{ id: 2 }]
 unionBy((item) => item.id, [{ id: 1 }], [{ id: 1 }, { id: 2 }]); // [{ id: 1 }, { id: 2 }]
+```
+
+### `intersectionAll` / `differenceAll`
+
+N-ary SameValueZero set helpers.
+
+```ts
+import { intersectionAll, differenceAll } from '@devxbhuvn/array-fns';
+
+intersectionAll([1, 2, 3], [2, 3, 4], [2, 5]); // [2]
+differenceAll([1, 2, 3, 4], [2], [4]); // [1, 3]
 ```
 
 ### `differenceWith` / `intersectionWith` / `unionWith` / `uniqueWith`
@@ -790,17 +822,33 @@ findLast([1, 2, 3, 4], (value) => value % 2 === 0); // 4
 findLastIndex([1, 2, 3, 2], (value) => value === 2); // 3
 ```
 
-### `takeUntil` / `dropUntil` / `initial` / `tail` / `rest`
-
-`rest` is an alias of `tail`.
+### `takeUntil` / `dropUntil` / `initial` / `tail` / `takeLastWhile` / `dropLastWhile`
 
 ```ts
-import { takeUntil, dropUntil, initial, tail } from '@devxbhuvn/array-fns';
+import { takeUntil, dropUntil, initial, tail, takeLastWhile, dropLastWhile } from '@devxbhuvn/array-fns';
 
 takeUntil([1, 2, 3, 4], (value) => value === 3); // [1, 2]
 dropUntil([1, 2, 3, 4], (value) => value === 3); // [3, 4]
 initial([1, 2, 3]); // [1, 2]
 tail([1, 2, 3]); // [2, 3]
+takeLastWhile([1, 2, 3, 4], (value) => value > 2); // [3, 4]
+dropLastWhile([1, 2, 3, 4], (value) => value > 2); // [1, 2]
+```
+
+### `findMap` / `compactMap` / `reduceWhile` / `partitionBy`
+
+```ts
+import { findMap, compactMap, reduceWhile, partitionBy } from '@devxbhuvn/array-fns';
+
+findMap([1, 2, 3], (value) => (value > 1 ? value * 10 : undefined)); // 20
+compactMap([1, 2, 3], (value) => (value % 2 ? value : null)); // [1, 3]
+reduceWhile(
+    [1, 2, 3, 4],
+    (sum, value) => sum + value <= 6,
+    (sum, value) => sum + value,
+    0
+); // 6
+partitionBy([1, 1, 2, 2], (value) => value); // [[1, [1, 1]], [2, [2, 2]]]
 ```
 
 ### `splitAt` / `splitWhen` / `span`
@@ -878,27 +926,39 @@ equals([1, Number.NaN], [1, Number.NaN]); // true
 binarySearch([1, 3, 5, 7], 5); // 2
 ```
 
-### `sampleWeighted` / `choice`
+### `sampleWeighted`
 
-`choice` is an alias of `sample`.
+Optional RNG injection is supported on `sample`, `sampleSize`, `shuffle`, and `sampleWeighted` as a final `random?: () => number` argument.
 
 ```ts
-import { sampleWeighted, choice } from '@devxbhuvn/array-fns';
+import { sampleWeighted, sample } from '@devxbhuvn/array-fns';
 
 sampleWeighted(['a', 'b'], [1, 3]); // 'a' or 'b'
-choice([7]); // 7
+sample([10, 20, 30], () => 0); // 10
 ```
 
-### `repeat` / `times` / `castArray` / `scan` / `tap`
+### `repeat` / `times` / `castArray` / `rangeRight` / `clampIndex` / `scan` / `tap`
 
 ```ts
-import { repeat, times, castArray, scan, tap } from '@devxbhuvn/array-fns';
+import { repeat, times, castArray, rangeRight, clampIndex, scan, tap } from '@devxbhuvn/array-fns';
 
 repeat('x', 3); // ['x', 'x', 'x']
 times(3, (index) => index * 2); // [0, 2, 4]
 castArray(1); // [1]
+rangeRight(5); // [4, 3, 2, 1, 0]
+clampIndex(-1, 5); // 4
 scan([1, 2, 3], (sum, value) => sum + value, 0); // [1, 3, 6]
 tap([1, 2], (copy) => console.log(copy)); // [1, 2]
+```
+
+### `splice` / `replace` / `flatMapDeep`
+
+```ts
+import { splice, replace, flatMapDeep } from '@devxbhuvn/array-fns';
+
+splice([1, 2, 3, 4], 1, 2, 9); // [1, 9, 4]
+replace([1, 2, 3, 2], (value) => value === 2, 9); // [1, 9, 3, 2]
+flatMapDeep([1, 2], (value) => [value, [value * 10]]); // [1, 10, 2, 20]
 ```
 
 ## Sorting and random utilities
@@ -1002,26 +1062,40 @@ sampleSize(['A', 'B'], 10);
 - `take` and `drop` require non-negative integer counts.
 - `takeRight` and `dropRight` truncate fractional counts toward zero; negative counts behave as zero.
 - `reduce` and `reduceRight` throw when called on an empty array without an initial value.
-- `first`, `last`, `find`, `findLast`, `sample`, `choice`, `max`, `min`, `mean`, `median`, `mode`, and related helpers return `undefined` when no value is available.
+- `first`, `last`, `find`, `findLast`, `sample`, `max`, `min`, `mean`, `median`, `mode`, `extent`, `variance`, `stdDev`, and related helpers return `undefined` when no value is available.
 - `zip`, `zipWith`, and `zipMany` stop at the shortest input array; `zipLongest` pads with `undefined`.
 - `binarySearch` assumes an ascending sorted array and returns `-1` when the value is absent.
 - Equality-based operations preserve references to object values and do not perform deep equality checks.
+
+## Migrating from 1.x
+
+Removed aliases (use the canonical names):
+
+| Removed    | Use instead                       |
+| ---------- | --------------------------------- |
+| `nth`      | `at`                              |
+| `indexBy`  | `keyBy`                           |
+| `rest`     | `tail`                            |
+| `choice`   | `sample`                          |
+| `uniqueBy` | `unique` (with optional selector) |
 
 ## TypeScript types
 
 The package publishes declaration files and exports these shared types:
 
 ```ts
-import type { Comparator, EqualityComparator, Iteratee, OrderDirection, Predicate, Selector, SortValue } from '@devxbhuvn/array-fns';
+import type { Comparator, EqualityComparator, Iteratee, OrderDirection, Predicate, RandomSource, Selector, SortValue, TypeGuardPredicate } from '@devxbhuvn/array-fns';
 ```
 
 - `Predicate<T>` receives `(value, index, array)` and returns a boolean.
+- `TypeGuardPredicate<T, S>` narrows `filter` / `find` / `findLast` / `takeWhile` results.
 - `Selector<T, K>` receives `(value, index, array)` and returns a property key.
 - `Comparator<T>` receives two values and returns a number less than, equal to, or greater than zero.
 - `EqualityComparator<T>` receives two values and returns `true` when they should be treated as equal.
 - `Iteratee<T, R>` maps a value to another result.
 - `OrderDirection` is `'asc' | 'desc'`.
 - `SortValue` describes values supported by selector-based sorting.
+- `RandomSource` is `() => number` for injectable RNG helpers.
 
 ## Package output
 
@@ -1030,6 +1104,8 @@ The package publishes:
 - ESM output for modern bundlers
 - CommonJS output for Node.js and CommonJS applications
 - TypeScript declaration files
+- Per-function deep entry points (for example `@devxbhuvn/array-fns/unique`)
+- `CHANGELOG.md` in the published tarball
 
 The package is marked with `sideEffects: false`, allowing bundlers to remove unused functions through tree-shaking.
 

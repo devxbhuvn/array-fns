@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0
+
+### Added
+
+- Map-first helpers: `groupToMap`, `indexToMap`, `frequencies`, `countWhere`.
+- Transform helpers: `findMap`, `compactMap`, `reduceWhile`, `partitionBy`, `flatMapDeep`.
+- Slice symmetry: `takeLastWhile`, `dropLastWhile`.
+- N-ary set ops: `intersectionAll`, `differenceAll`.
+- Stats: `extent`, `variance`, `stdDev`.
+- Create / edit: `rangeRight`, `clampIndex`, `splice`, `replace`.
+- Type-guard overloads for `filter`, `find`, `findLast`, and `takeWhile`.
+- Stronger tuple overloads for `zipMany`, `cartesian`, and `interleave`.
+- Optional `random?: () => number` on `sample`, `sampleSize`, `shuffle`, and `sampleWeighted`.
+- Shared `compareValues` util for `sortBy` / `orderBy`.
+- Per-function deep exports (for example `@devxbhuvn/array-fns/unique`).
+- Vitest coverage thresholds, `size-limit` budget, and `CHANGELOG.md` in the published package.
+- Shared types: `RandomSource`, `TypeGuardPredicate`.
+
+### Changed
+
+- Node.js engine requirement is now `>=20`.
+- Package version is `2.0.0`.
+
+### Removed
+
+- Aliases `nth`, `indexBy`, `rest`, `choice`, and `uniqueBy`. Use `at`, `keyBy`, `tail`, `sample`, and `unique` instead.
+
 ## 1.1.0
 
 ### Added

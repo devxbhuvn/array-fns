@@ -1,8 +1,10 @@
+import type { RandomSource } from '../types/common';
+
 /**
  * Returns a random item using non-negative weights aligned with `array`.
  * @throws {RangeError} When lengths differ, weights are invalid, or all weights are zero.
  */
-export function sampleWeighted<T>(array: readonly T[], weights: readonly number[]): T | undefined {
+export function sampleWeighted<T>(array: readonly T[], weights: readonly number[], random: RandomSource = Math.random): T | undefined {
     if (array.length === 0) {
         return undefined;
     }
@@ -24,7 +26,7 @@ export function sampleWeighted<T>(array: readonly T[], weights: readonly number[
         throw new RangeError('at least one weight must be greater than zero.');
     }
 
-    let threshold = Math.random() * total;
+    let threshold = random() * total;
 
     for (let index = 0; index < array.length; index += 1) {
         threshold -= weights[index]!;

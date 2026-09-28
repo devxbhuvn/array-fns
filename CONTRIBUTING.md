@@ -13,7 +13,7 @@ Thank you for helping improve this project. Contributions should preserve the pa
 
 Requirements:
 
-- Node.js 18 or newer
+- Node.js 20 or newer
 - npm
 
 Install dependencies from the lockfile:

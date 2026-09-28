@@ -1,6 +1,6 @@
 {
     "name": "@devxbhuvn/array-fns",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "description": "Modern, dependency-free TypeScript array utilities for everyday JavaScript and TypeScript development.",
     "license": "MIT",
     "author": "Bhuvanesh C <cjbhuvanesh8@gmail.com>",
@@ -21,12 +21,18 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "require": "./dist/index.cjs"
+        },
+        "./*": {
+            "types": "./dist/*.d.ts",
+            "import": "./dist/*.js",
+            "require": "./dist/*.cjs"
         }
     },
     "files": [
         "dist",
         "README.md",
-        "LICENSE"
+        "LICENSE",
+        "CHANGELOG.md"
     ],
     "keywords": [
         "array",
@@ -39,33 +45,46 @@
         "array-fns"
     ],
     "scripts": {
-        "build": "tsup src/index.ts --format esm,cjs --dts --clean",
-        "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+        "build": "tsup",
+        "dev": "tsup --watch",
         "test": "vitest run",
         "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
         "typecheck": "tsc --noEmit",
         "lint": "eslint .",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "clean": "rimraf dist",
         "pack:check": "npm pack --dry-run",
+        "size": "size-limit",
         "prepublishOnly": "npm run build"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=20"
     },
     "sideEffects": false,
     "publishConfig": {
         "access": "public"
     },
+    "size-limit": [
+        {
+            "path": "dist/index.js",
+            "limit": "55 kB"
+        },
+        {
+            "path": "dist/index.cjs",
+            "limit": "55 kB"
+        }
+    ],
     "devDependencies": {
+        "@size-limit/file": "^11.2.0",
         "@types/node": "^22.13.10",
-        "@typescript-eslint/eslint-plugin": "^8.26.1",
-        "@typescript-eslint/parser": "^8.26.1",
+        "@vitest/coverage-v8": "^3.0.8",
         "eslint": "^9.22.0",
         "eslint-config-prettier": "^10.1.1",
         "prettier": "^3.5.3",
         "rimraf": "^6.0.1",
+        "size-limit": "^11.2.0",
         "tsup": "^8.5.1",
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.26.1",
