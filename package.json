@@ -1,6 +1,6 @@
 {
     "name": "@devxbhuvn/array-fns",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Modern, dependency-free TypeScript array utilities for everyday JavaScript and TypeScript development.",
     "license": "MIT",
     "author": "Bhuvanesh C <cjbhuvanesh8@gmail.com>",
